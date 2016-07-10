@@ -19,10 +19,9 @@ cd sbustreamspot-docker
 docker build --build-arg BBN_USER=$USER --build-arg BBN_PASS=$PASS -t streamspot .
 ```
 
-Run the Docker container
+## Run the Docker container
 
 Requires a CDM13/Avro file with training data stored in the current directory as `train.avro`.
-
 ```
 TODO
 ```
