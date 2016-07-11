@@ -22,7 +22,6 @@ RUN git clone https://$BBN_USER:$BBN_PASS@git.tc.bbn.com/bbn/ta3-api-bindings-py
 RUN cd ta3-api-bindings-python; python setup.py install
 
 # Build StreamSpot Core
-ARG test
 RUN git clone https://github.com/sbustreamspot/sbustreamspot-core.git -b 2016.07-engagement
 RUN pip install -r sbustreamspot-core/requirements.txt
 RUN cd sbustreamspot-core; make optimized
@@ -33,7 +32,6 @@ RUN chmod +x test-streamspot-core.sh
 RUN ./test-streamspot-core.sh
 
 # Build StreamSpot CDM
-ARG test2
 RUN git clone https://github.com/sbustreamspot/sbustreamspot-cdm.git
 RUN pip install -r sbustreamspot-cdm/requirements.txt
 
@@ -56,6 +54,10 @@ RUN ./test-streamspot-shingles.sh
 ADD test-streamspot-clustering.sh test-streamspot-clustering.sh
 RUN chmod +x test-streamspot-clustering.sh
 RUN ./test-streamspot-clustering.sh
+
+# Add StreamSpot driver
+ADD streamspot streamspot
+RUN chmod +x streamspot
 
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
