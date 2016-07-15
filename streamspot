@@ -46,7 +46,7 @@ echo "KAFKA_TOPIC_OUT=$KAFKA_TOPIC_OUT"
 cd /sbustreamspot-cdm
 python translate_cdm_to_streamspot.py \
   --url $KAFKA_URL_IN --kafka-topic $KAFKA_TOPIC_IN --kafka-group $KAFKA_GROUP \
-  --format avro --source kafka | \
+  --format avro --source kafka --concise | \
     /sbustreamspot-core/streamspot \
       --edges=/train.ss --bootstrap=/train.cl | \
         python /sbustreamspot-core/pipe_stdout_to_kafka.py \
