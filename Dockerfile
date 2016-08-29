@@ -57,5 +57,10 @@ RUN cd sbustreamspot-train/graphs-to-shingle-vectors; make optimized
 ADD streamspot streamspot
 RUN chmod +x streamspot
 
+# Add StreamSpot training data fetcher
+ADD fetch_training_data.py fetch_training_data.py
+ADD streamspot-fetch-training-data streamspot-fetch-training-data
+RUN chmod +x streamspot-fetch-training-data
+
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

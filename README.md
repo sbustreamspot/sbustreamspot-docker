@@ -26,24 +26,39 @@ docker build --build-arg BBN_USER=$USER \
 
 ## Run the Docker container
 
-Start the Docker container with the initial command `/streamspot`.
-
 Requirements:
 
-   * Training data (assumed to be stored as `train.avro` in the current directory).
    * Environment variable `CHUNK_LENGTH`: the shingling chunk length for StreamSpot.
    * Environment variables `KAFKA_URL_IN`, `KAFKA_TOPIC_IN`, `KAFKA_GROUP`.
    * Environment variables `KAFKA_URL_OUT`, `KAFKA_TOPIC_OUT`.
+   * Environment variable `TRAINING_DIR` that contains `train.avro`
+   * A mount point that will be mounted as $TRAINING_DIR in the Docker volume.
+     This is assumed to be `/mnt/training-dir`.
 
 `env.list` contains a sample of variables to connect to Kafka in tc-in-a-box.
-A container can be run using these by:
+
+### Training Mode
+
+Start the Docker container with the initial command `/streamspot-fetch-training-data`.
+
 ```
 docker run \
-  -v $(pwd)/train.avro:/train.avro:ro \
   --net host \
+  -v /mnt/training-dir/:/training-dir
   --env-file ./env.list \
-  marple/streamspot \
-  /streamspot
+  marple/streamspot /streamspot-fetch-training-data
+```
+
+### Test/Streaming Mode
+
+Start the Docker container with the initial command `/streamspot`.
+
+```
+docker run \
+  --net host \
+  -v /mnt/training-dir/:/training-dir
+  --env-file ./env.list \
+  marple/streamspot /streamspot
 ```
 
 ## Note if connecting to Kafka in tc-in-a-box

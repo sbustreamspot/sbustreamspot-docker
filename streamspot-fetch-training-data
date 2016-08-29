@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# This script simply reads all available CDM/Avro records from Kafka
+# and writes them to $TRAINING_DIR/train.avro
+
+python fetch_training_data.py \
+  --url $KAFKA_URL_IN \
+  --group $KAFKA_GROUP \
+  --topic $KAFKA_TOPIC_IN \
+  --training-dir $TRAINING_DIR

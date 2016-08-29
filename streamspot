@@ -3,10 +3,10 @@
 # Convert training data from Avro to StreamSpot
 cd /sbustreamspot-cdm
 python translate_cdm_to_streamspot.py \
-  --url /train.avro \
+  --url $TRAINING_DIR/train.avro \
   --format avro \
   --source file \
-  --concise > /train.ss
+  --concise > $TRAINING_DIR/train.ss
 if [ $? -ne 0 ]; then
   echo "[sbustreamspot-cdm] FAIL!"
   exit 1
@@ -16,9 +16,9 @@ fi
 
 # Extract graphs as shingle vectors from training data
 /sbustreamspot-train/graphs-to-shingle-vectors/streamspot \
-  --edges=/train.ss \
+  --edges=$TRAINING_DIR/train.ss \
   --chunk-length $CHUNK_LENGTH \
-  > /train.sv
+  > $TRAINING_DIR/train.sv
 if [ $? -ne 0 ]; then
   echo "[sbustreamspot-train] (shingles) FAIL!"
   exit 1
@@ -28,7 +28,7 @@ fi
 
 # Cluster training graphs
 python /sbustreamspot-train/create_seed_clusters.py \
-  --input /train.sv > /train.cl
+  --input $TRAINING_DIR/train.sv > $TRAINING_DIR/train.cl
 if [ $? -ne 0 ]; then
   echo "[sbustreamspot-train] (clusters) FAIL!"
   exit 1
@@ -48,6 +48,6 @@ python translate_cdm_to_streamspot.py \
   --url $KAFKA_URL_IN --kafka-topic $KAFKA_TOPIC_IN --kafka-group $KAFKA_GROUP \
   --format avro --source kafka --concise | \
     /sbustreamspot-core/streamspot \
-      --edges=/train.ss --bootstrap=/train.cl | \
+      --edges=$TRAINING_DIR/train.ss --bootstrap=$TRAINING_DIR/train.cl | \
         python /sbustreamspot-core/pipe_stdout_to_kafka.py \
           --url $KAFKA_URL_OUT --topic $KAFKA_TOPIC_OUT
