@@ -1,19 +1,5 @@
 #!/usr/bin/env bash
 
-# Convert training data from Avro to StreamSpot
-cd /sbustreamspot-cdm
-python translate_cdm_to_streamspot.py \
-  --url $TRAINING_DIR/train.avro \
-  --format avro \
-  --source file \
-  --concise > $TRAINING_DIR/train.ss
-if [ $? -ne 0 ]; then
-  echo "[sbustreamspot-cdm] FAIL!"
-  exit 1
-else
-  echo "[sbustreamspot-cdm] SUCCESS"
-fi
-
 # Extract graphs as shingle vectors from training data
 /sbustreamspot-train/graphs-to-shingle-vectors/streamspot \
   --edges=$TRAINING_DIR/train.ss \
