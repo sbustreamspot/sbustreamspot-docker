@@ -4,10 +4,10 @@
 cd /sbustreamspot-cdm
 python translate_cdm_to_streamspot.py \
   --url $KAFKA_URL_IN --kafka-topic $KAFKA_TOPIC_IN --kafka-group $KAFKA_GROUP \
-  --format avro --source kafka --concise --train > $TRAINING_DIR/train.ss
+  --format avro --source kafka --concise --train > $TRAINING_DIR/train.ss 2>> $LOG_DIR/streamspot.log
 if [ $? -ne 0 ]; then
-  echo "[sbustreamspot-cdm] FAIL!"
+  echo "[sbustreamspot-cdm] FAIL!" >> $LOG_DIR/streamspot.log
   exit 1
 else
-  echo "[sbustreamspot-cdm] SUCCESS"
+  echo "[sbustreamspot-cdm] SUCCESS" >> $LOG_DIR/streamspot.log
 fi

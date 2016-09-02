@@ -4,36 +4,36 @@
 /sbustreamspot-train/graphs-to-shingle-vectors/streamspot \
   --edges=$TRAINING_DIR/train.ss \
   --chunk-length $CHUNK_LENGTH \
-  > $TRAINING_DIR/train.sv
+  > $TRAINING_DIR/train.sv 2>> $LOG_DIR/streamspot.log
 if [ $? -ne 0 ]; then
-  echo "[sbustreamspot-train] (shingles) FAIL!"
+  echo "[sbustreamspot-train] (shingles) FAIL!" >> $LOG_DIR/streamspot.log
   exit 1
 else
-  echo "[sbustreamspot-train] (shingles) SUCCESS"
+  echo "[sbustreamspot-train] (shingles) SUCCESS" >> $LOG_DIR/streamspot.log
 fi
 
 # Cluster training graphs
 python /sbustreamspot-train/create_seed_clusters.py \
-  --input $TRAINING_DIR/train.sv > $TRAINING_DIR/train.cl
+  --input $TRAINING_DIR/train.sv > $TRAINING_DIR/train.cl 2>> $LOG_DIR/streamspot.log
 if [ $? -ne 0 ]; then
-  echo "[sbustreamspot-train] (clusters) FAIL!"
+  echo "[sbustreamspot-train] (clusters) FAIL!" >> $LOG_DIR/streamspot.log
   exit 1
 else
-  echo "[sbustreamspot-train] (clusters) SUCCESS"
+  echo "[sbustreamspot-train] (clusters) SUCCESS" >> $LOG_DIR/streamspot.log
 fi
 
 # Start StreamSpot
-echo "Starting StreamSpot..."
-echo "KAFKA_URL_IN=$KAFKA_URL_IN"
-echo "KAFKA_TOPIC_IN=$KAFKA_TOPIC_IN"
-echo "KAFKA_GROUP=$KAFKA_GROUP"
-echo "KAFKA_URL_OUT=$KAFKA_URL_OUT"
-echo "KAFKA_TOPIC_OUT=$KAFKA_TOPIC_OUT"
+echo "Starting StreamSpot..." >> $LOG_DIR/streamspot.log
+echo "KAFKA_URL_IN=$KAFKA_URL_IN" >> $LOG_DIR/streamspot.log
+echo "KAFKA_TOPIC_IN=$KAFKA_TOPIC_IN" >> $LOG_DIR/streamspot.log
+echo "KAFKA_GROUP=$KAFKA_GROUP" >> $LOG_DIR/streamspot.log
+echo "KAFKA_URL_OUT=$KAFKA_URL_OUT" >> $LOG_DIR/streamspot.log
+echo "KAFKA_TOPIC_OUT=$KAFKA_TOPIC_OUT" >> $LOG_DIR/streamspot.log
 cd /sbustreamspot-cdm
 python translate_cdm_to_streamspot.py \
   --url $KAFKA_URL_IN --kafka-topic $KAFKA_TOPIC_IN --kafka-group $KAFKA_GROUP \
-  --format avro --source kafka --concise | \
+  --format avro --source kafka --concise 2>> $LOG_DIR/streamspot.log | \
     /sbustreamspot-core/streamspot \
-      --edges=$TRAINING_DIR/train.ss --bootstrap=$TRAINING_DIR/train.cl | \
+      --edges=$TRAINING_DIR/train.ss --bootstrap=$TRAINING_DIR/train.cl 2>> $LOG_DIR/streamspot.log | \
         python /sbustreamspot-core/pipe_stdout_to_kafka.py \
-          --url $KAFKA_URL_OUT --topic $KAFKA_TOPIC_OUT
+          --url $KAFKA_URL_OUT --topic $KAFKA_TOPIC_OUT 2>> $LOG_DIR/streamspot.log
